@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 public final class PrinterUtils {
     private static PrintWriter fileWriter;
     private static final String INDENT = "\t";
+    private static final Object lock = new Object();
     
     private PrinterUtils() {} // Prevent instantiation
 
@@ -37,11 +38,13 @@ public final class PrinterUtils {
 
     public static void print(int indentLevel, String message) {
         String indentedMessage = INDENT.repeat(indentLevel) + message;
-        System.out.println(indentedMessage);
-        
-        if (AppConfig.isPrintToFile() && fileWriter != null) {
-            fileWriter.println(indentedMessage);
-            fileWriter.flush();
+        synchronized (lock) {
+            System.out.println(indentedMessage);
+            
+            if (AppConfig.isPrintToFile() && fileWriter != null) {
+                fileWriter.println(indentedMessage);
+                fileWriter.flush();
+            }
         }
     }
 } 

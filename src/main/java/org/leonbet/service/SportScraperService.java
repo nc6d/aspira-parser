@@ -112,29 +112,27 @@ public class SportScraperService {
         String kickoffTime = AppConfig.getDateFormatter().format(kickoffInstant);
 
         // TODO: Needs to clarify - should we group outcomes by its market name?
-        synchronized (System.out) {
-            PrinterUtils.print(0, sport + ", " + league);
-            PrinterUtils.print(1, matchName + ", " + kickoffTime + ", " + matchId);
+        PrinterUtils.print(0, sport + ", " + league);
+        PrinterUtils.print(1, matchName + ", " + kickoffTime + ", " + matchId);
 
-            JsonNode markets = event.path("markets");
-            if (markets.isArray()) {
-                for (JsonNode market : markets) {
-                    String marketName = market.path("name").asText();
-                    PrinterUtils.print(2, marketName);
+        JsonNode markets = event.path("markets");
+        if (markets.isArray()) {
+            for (JsonNode market : markets) {
+                String marketName = market.path("name").asText();
+                PrinterUtils.print(2, marketName);
 
-                    JsonNode runners = market.path("runners");
-                    if (runners.isArray()) {
-                        for (JsonNode runner : runners) {
-                            String outcomeName = runner.path("name").asText();
-                            double outcomePrice = runner.path("price").asDouble();
-                            long outcomeId = runner.path("id").asLong();
-                            PrinterUtils.print(3, outcomeName + ", " + outcomePrice + ", " + outcomeId);
-                        }
+                JsonNode runners = market.path("runners");
+                if (runners.isArray()) {
+                    for (JsonNode runner : runners) {
+                        String outcomeName = runner.path("name").asText();
+                        double outcomePrice = runner.path("price").asDouble();
+                        long outcomeId = runner.path("id").asLong();
+                        PrinterUtils.print(3, outcomeName + ", " + outcomePrice + ", " + outcomeId);
                     }
                 }
             }
-            System.out.println();
         }
+        PrinterUtils.print(0, "");
         BenchmarkUtils.record("Print Match " + matchName, startTime);
     }
 } 

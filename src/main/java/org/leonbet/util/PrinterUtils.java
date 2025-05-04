@@ -2,7 +2,6 @@ package org.leonbet.util;
 
 import org.leonbet.config.AppConfig;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,7 +17,7 @@ public final class PrinterUtils {
 
     public static void initFile(String fileName) {
         try {
-            Path reportsPath = Paths.get(AppConfig.REPORTS_DIR);
+            Path reportsPath = Paths.get(AppConfig.getReportsDir());
             if (!Files.exists(reportsPath)) {
                 Files.createDirectories(reportsPath);
             }
@@ -40,7 +39,7 @@ public final class PrinterUtils {
         String indentedMessage = INDENT.repeat(indentLevel) + message;
         System.out.println(indentedMessage);
         
-        if (AppConfig.PRINT_TO_FILE && fileWriter != null) {
+        if (AppConfig.isPrintToFile() && fileWriter != null) {
             fileWriter.println(indentedMessage);
             fileWriter.flush();
         }

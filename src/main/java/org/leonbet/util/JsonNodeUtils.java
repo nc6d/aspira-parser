@@ -3,6 +3,7 @@ package org.leonbet.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.leonbet.config.AppConfig;
 
+// Can be replaced with usual domain models if needed
 public final class JsonNodeUtils {
     private JsonNodeUtils() {} // Prevent instantiation
     

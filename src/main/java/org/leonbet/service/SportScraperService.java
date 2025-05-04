@@ -30,7 +30,7 @@ public class SportScraperService {
                         System.err.println("Error in processing: " + t.getMessage());
                     }
                     executor.shutdown();
-                    if (AppConfig.PRINT_TO_FILE) {
+                    if (AppConfig.isPrintToFile()) {
                         PrinterUtils.closeFile();
                     }
                 })
@@ -94,7 +94,7 @@ public class SportScraperService {
                 ? Instant.ofEpochMilli(kickoffTimestamp)
                 : Instant.ofEpochSecond(kickoffTimestamp);
 
-        String kickoffTime = AppConfig.UTC_FORMATTER.format(kickoffInstant);
+        String kickoffTime = AppConfig.getDateFormatter().format(kickoffInstant);
 
         synchronized (System.out) {
             PrinterUtils.print(0, sport + ", " + league);

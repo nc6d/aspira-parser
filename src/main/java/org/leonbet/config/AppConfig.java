@@ -1,7 +1,7 @@
 package org.leonbet.config;
 
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 
@@ -11,11 +11,44 @@ public final class AppConfig {
     public static final int MAX_THREADS = 3;
     public static final String BASE_API_URL = "https://leonbets.com/api-2";
     
-    public static final DateTimeFormatter UTC_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss 'UTC'").withZone(ZoneOffset.UTC);
+    private static boolean PRINT_TO_FILE = false;
+    private static String reportsDir = "reports";
+    private static ZoneId timeZone = ZoneId.of("UTC");
+    private static DateTimeFormatter UTC_FORMATTER;
     
-    public static final boolean PRINT_TO_FILE = true;
-    public static final String REPORTS_DIR = "reports";
+    static {
+        updateDateFormatter();
+    }
+    
+    private static void updateDateFormatter() {
+        UTC_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z")
+                .withZone(timeZone);
+    }
+    
+    public static boolean isPrintToFile() {
+        return PRINT_TO_FILE;
+    }
+    
+    public static void setPrintToFile(boolean value) {
+        PRINT_TO_FILE = value;
+    }
+    
+    public static String getReportsDir() {
+        return reportsDir;
+    }
+    
+    public static void setReportsDir(String dir) {
+        reportsDir = dir;
+    }
+    
+    public static void setTimeZone(String zoneId) {
+        timeZone = ZoneId.of(zoneId);
+        updateDateFormatter();
+    }
+    
+    public static DateTimeFormatter getDateFormatter() {
+        return UTC_FORMATTER;
+    }
 
     public static final Set<String> COMMON_API_FLAGS = Set.of(
             "reg",      // Regular markets

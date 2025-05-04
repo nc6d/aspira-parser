@@ -21,6 +21,7 @@ public class SportScraperService {
         this.executor = executor;
     }
 
+    // TODO: Needs to clarify - don't sure if sports parallel processing is allowed.
     public void start() {
         apiClient.fetchSports()
                 .thenApplyAsync(json -> json.isArray() ? json : null, executor)
@@ -96,6 +97,7 @@ public class SportScraperService {
 
         String kickoffTime = AppConfig.getDateFormatter().format(kickoffInstant);
 
+        // TODO: Needs to clarify - should we group outcomes by its market name?
         synchronized (System.out) {
             PrinterUtils.print(0, sport + ", " + league);
             PrinterUtils.print(1, matchName + ", " + kickoffTime + ", " + matchId);

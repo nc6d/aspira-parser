@@ -43,6 +43,7 @@ This will run the application with default settings (console output only, UTC ti
 - `-n, --no-print`: Disable writing output to a file (default)
 - `-d, --dir <path>`: Set custom directory for report files (default: "reports")
 - `-t, --timezone <zone>`: Set timezone (default: UTC)
+- `-b, --benchmark`: Enable performance benchmarking
 - `-f, --force-rebuild`: Force rebuild the project even if no changes detected
 - `-h, --help`: Show help message
 

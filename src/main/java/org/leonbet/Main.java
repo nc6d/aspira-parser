@@ -5,6 +5,7 @@ import org.leonbet.client.ApiClient;
 import org.leonbet.client.LeonBetsApiClient;
 import org.leonbet.config.AppConfig;
 import org.leonbet.service.SportScraperService;
+import org.leonbet.util.BenchmarkUtils;
 import org.leonbet.util.PrinterUtils;
 
 import java.net.http.HttpClient;
@@ -53,6 +54,9 @@ public class Main {
                         AppConfig.setTimeZone(args[++i]);
                     }
                     break;
+                case "--benchmark":
+                    BenchmarkUtils.setEnabled(true);
+                    break;
                 case "--help":
                     printHelp();
                     System.exit(0);
@@ -72,6 +76,8 @@ public class Main {
         System.out.println("  --no-print-to-file     Disable writing output to a file (default)");
         System.out.println("  --reports-dir <dir>    Set custom directory for report files");
         System.out.println("  --timezone <zone>      Set timezone (e.g., UTC, Europe/London)");
+        System.out.println("  --benchmark            Enable performance benchmarking");
+        System.out.println("  --force-rebuild        Force rebuild the project");
         System.out.println("  --help                 Show this help message");
     }
 }

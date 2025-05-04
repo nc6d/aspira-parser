@@ -4,6 +4,7 @@
 PRINT_TO_FILE=""
 REPORTS_DIR=""
 TIMEZONE=""
+BENCHMARK=""
 JAR_FILE="target/parser-1.0-SNAPSHOT.jar"
 SRC_DIR="src/main/java"
 POM_FILE="pom.xml"
@@ -17,6 +18,7 @@ show_usage() {
     echo "  -d, --dir <path>       Set custom directory for report files"
     echo "  -t, --timezone <zone>  Set timezone (e.g., UTC, Europe/London)"
     echo "  -f, --force-rebuild    Force rebuild the project"
+    echo "  -b, --benchmark        Enable performance benchmarking"
     echo "  -h, --help             Show this help message"
 }
 
@@ -77,6 +79,10 @@ while [[ $# -gt 0 ]]; do
             FORCE_REBUILD=true
             shift
             ;;
+        -b|--benchmark)
+            BENCHMARK="--benchmark"
+            shift
+            ;;
         -h|--help)
             show_usage
             exit 0
@@ -112,4 +118,4 @@ if [ ! -f "$JAR_FILE" ]; then
 fi
 
 # Run the application with provided arguments
-java -jar "$JAR_FILE" $PRINT_TO_FILE $REPORTS_DIR $TIMEZONE 
+java -jar "$JAR_FILE" $PRINT_TO_FILE $REPORTS_DIR $TIMEZONE $BENCHMARK 

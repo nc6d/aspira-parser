@@ -3,6 +3,7 @@ package org.leonbet.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.leonbet.client.ApiClient;
 import org.leonbet.config.AppConfig;
+import org.leonbet.util.BenchmarkUtils;
 import org.leonbet.util.JsonNodeUtils;
 import org.leonbet.util.PrinterUtils;
 
@@ -23,24 +24,33 @@ public class SportScraperService {
 
     // TODO: Needs to clarify - don't sure if sports parallel processing is allowed.
     public void start() {
-        apiClient.fetchSports()
-                .thenApplyAsync(json -> json.isArray() ? json : null, executor)
-                .thenAcceptAsync(this::processSports, executor)
-                .whenComplete((v, t) -> {
-                    if (t != null) {
-                        System.err.println("Error in processing: " + t.getMessage());
-                    }
-                    executor.shutdown();
-                    if (AppConfig.isPrintToFile()) {
-                        PrinterUtils.closeFile();
-                    }
-                })
-                .join();
+        long startTime = System.currentTimeMillis();
+        try {
+            apiClient.fetchSports()
+                    .thenApplyAsync(json -> json.isArray() ? json : null, executor)
+                    .thenAcceptAsync(this::processSports, executor)
+                    .whenComplete((v, t) -> {
+                        if (t != null) {
+                            System.err.println("Error in processing: " + t.getMessage());
+                        }
+                        executor.shutdown();
+                        if (AppConfig.isPrintToFile()) {
+                            PrinterUtils.closeFile();
+                        }
+                    })
+                    .join();
+        } finally {
+            BenchmarkUtils.record("Total Execution", startTime);
+            if (BenchmarkUtils.isEnabled()) {
+                BenchmarkUtils.printReport();
+            }
+        }
     }
 
     private void processSports(JsonNode sportsArray) {
         if (sportsArray == null) return;
 
+        long startTime = System.currentTimeMillis();
         List<CompletableFuture<Void>> leagueFutures = new ArrayList<>();
 
         for (JsonNode sport : sportsArray) {
@@ -60,9 +70,11 @@ public class SportScraperService {
         }
 
         CompletableFuture.allOf(leagueFutures.toArray(new CompletableFuture[0])).join();
+        BenchmarkUtils.record("Process Sports", startTime);
     }
 
     private CompletableFuture<Void> processLeague(String sportName, String leagueName, long leagueId) {
+        long startTime = System.currentTimeMillis();
         return apiClient.fetchLeagueEvents(leagueId)
                 .thenApplyAsync(json -> json.path("events").isArray() ? json.path("events") : null, executor)
                 .thenComposeAsync(eventsArray -> {
@@ -82,11 +94,13 @@ public class SportScraperService {
                             })
                             .toList();
 
-                    return CompletableFuture.allOf(matchFutures.toArray(new CompletableFuture[0]));
+                    return CompletableFuture.allOf(matchFutures.toArray(new CompletableFuture[0]))
+                            .whenComplete((v, t) -> BenchmarkUtils.record("Process League " + leagueName, startTime));
                 }, executor);
     }
 
     private void printMatch(String sport, String league, JsonNode event) {
+        long startTime = System.currentTimeMillis();
         String matchName = event.path("name").asText();
         long kickoffTimestamp = event.path("kickoff").asLong();
         long matchId = JsonNodeUtils.getEventId(event);
@@ -121,5 +135,6 @@ public class SportScraperService {
             }
             System.out.println();
         }
+        BenchmarkUtils.record("Print Match " + matchName, startTime);
     }
 } 

@@ -82,7 +82,8 @@ public class SportScraperService {
 
                     List<JsonNode> events = new ArrayList<>();
                     for (JsonNode event : eventsArray) {
-                        if (events.size() >= AppConfig.MAX_MATCHES) break;
+                        if (events.size() >= AppConfig.MAX_MATCHES
+                                || !"prematch".equalsIgnoreCase(event.path("betline").asText())) break;
                         events.add(event);
                     }
 
